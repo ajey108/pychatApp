@@ -1,11 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PYCHATAPP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.js"
+        integrity="sha512-luMnTJZ7oEchNDZAtQhgjomP1eZefnl82ruTH/3Oj/Yu5qYtwL7+dVRccACS/Snp1lFXq188XFipHKYE75IaQQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </head>
+
+
 <body>
-    <h1>ChatApp</h1>
+    <div>
+        <h1>ChatApp</h1>
+        <div class="chat-container">
+            <span id="current-username"></span>
+            <input type="text" placeholder="New Username" id="username">
+            <button id="Update-btn">Update Username</button>
+        </div>
+
+        <div class="message-container" id="message-container">
+            <input type="text" placeholder="Type Your Message" id="message-input">
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const messageContainer = document.getElementById('message-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+        const currentUsername = document.getElementById('current-username');
+        const updateUsernameBtn = document.getElementById('Update-btn');
+        const userInput = document.getElementById('username');
+
+        let currUserName = '';
+
+        socket.on('set_username', (data) => {
+            currUserName = data.username;
+            currentUsername.textContent = `Your username: ${currUserName}`;
+        });
+
+        socket.on('user_joined', (data) => {
+            addMessage(`${data.username} joined the chat`, 'system');
+        });
+
+        socket.on('user_left', (data) => {
+            addMessage(`${data.username} left the chat`, 'system');
+        });
+
+        socket.on('new_message', (data) => {
+            addMessage(data.message, 'user', data.username, data.avatar);
+        });
+
+        socket.on('username_updated', (data) => {
+            addMessage(`${data.old_username} changed their name to ${data.new_username}`, 'system');
+
+            if (data.old_username === currUserName) {
+                currUserName = data.new_username;
+                currentUsername.textContent = `Your username: ${currUserName}`;
+            }
+        });
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === "Enter") sendMessage();
+        });
+
+        updateUsernameBtn.addEventListener('click', updateUsername);
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                socket.emit('send_message', { message });
+                messageInput.value = '';
+            }
+        }
+
+        function updateUsername() {
+            const newUsername = userInput.value.trim();
+            if (newUsername && newUsername !== currUserName) {
+                socket.emit('update_username', { username: newUsername });
+                userInput.value = '';
+            }
+        }
+
+        function addMessage(message, type, username = '', avatar = '') {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            if (type === 'user') {
+                messageElement.innerHTML = `<strong>${username}</strong>: ${message}`;
+
+                if (avatar) {
+                    messageElement.innerHTML = `<img src="${avatar}" alt="${username}'s avatar"> ${messageElement.innerHTML}`;
+                }
+            } else {
+                messageElement.textContent = message;
+            }
+            messageContainer.appendChild(messageElement);
+            messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
+        }
+    </script>
 </body>
+
 </html>
