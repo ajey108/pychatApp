@@ -60,8 +60,15 @@ button:hover {
 }
 
 #current-username{
-    color: #0056b3;
+  
     font-style: italic;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
 }

@@ -90,20 +90,35 @@
         }
 
         function addMessage(message, type, username = '', avatar = '') {
-            const messageElement = document.createElement('div');
-            messageElement.classList.add('message', type);
-            if (type === 'user') {
-                messageElement.innerHTML = `<strong>${username}</strong>: ${message}`;
+    console.log('Avatar URL:', avatar); 
 
-                if (avatar) {
-                    messageElement.innerHTML = `<img src="${avatar}" alt="${username}'s avatar"> ${messageElement.innerHTML}`;
-                }
-            } else {
-                messageElement.textContent = message;
-            }
-            messageContainer.appendChild(messageElement);
-            messageContainer.scrollTop = messageContainer.scrollHeight; // Scroll to bottom
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', type);
+    
+    if (type === 'user') {
+        // Add avatar if available
+        if (avatar) {
+            const avatarElement = document.createElement('img');
+            avatarElement.src = avatar;
+            avatarElement.alt = `${username}'s avatar`;
+            avatarElement.classList.add('avatar'); 
+            messageElement.appendChild(avatarElement);
         }
+
+        // Add the username and message
+        const textElement = document.createElement('div');
+        textElement.innerHTML = `<strong>${username}</strong>: ${message}`;
+        messageElement.appendChild(textElement);
+    } else {
+        messageElement.textContent = message;
+    }
+
+    // Append the message element to the container
+    messageContainer.appendChild(messageElement);
+    messageContainer.scrollTop = messageContainer.scrollHeight; 
+}
+
+
     </script>
 </body>
 
