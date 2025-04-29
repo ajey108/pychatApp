@@ -6,6 +6,10 @@
 
 A private chat application built with **Python**, **HTML**, and **CSS** for seamless and secure communication.
 
+![pychatapp](https://github.com/user-attachments/assets/ac3ec39b-576c-4e0a-bc10-8aad094aeb52)
+
+
+
 ## Features
 
 - **Private Messaging**: Users can send and receive private messages in real-time.
